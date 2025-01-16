@@ -164,6 +164,18 @@
     <div class="container">
         <div class="rocket-container">
             <svg viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="flameBase" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fff" />
+                        <stop offset="50%" style="stop-color:#ff6600" />
+                        <stop offset="100%" style="stop-color:#ff8c00" />
+                    </linearGradient>
+                    <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#e0e0e0" />
+                        <stop offset="50%" style="stop-color:#ffffff" />
+                        <stop offset="100%" style="stop-color:#e0e0e0" />
+                    </linearGradient>
+                </defs>
                 <circle class="smoke" cx="12" cy="32" r="1" fill="#666" opacity="0.3">
                     <animate attributeName="cy" values="32;28" dur="2s" repeatCount="indefinite" />
                     <animate attributeName="opacity" values="0.3;0" dur="2s" repeatCount="indefinite" />
@@ -178,6 +190,37 @@
                              dur="0.2s" 
                              repeatCount="indefinite"/>
                 </path>
+                <!-- Base Flame -->
+                <path class="flame-base" 
+                      d="M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z" 
+                      fill="url(#flameBase)"
+                      opacity="0.9">
+                    <animate attributeName="d" 
+                             values="M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z;
+                                     M40,160 C40,160 45,163 50,160 C55,163 60,160 60,160 L50,188 Z;
+                                     M40,160 C40,160 45,164 50,160 C55,164 60,160 60,160 L50,186 Z;
+                                     M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z"
+                             dur="1.2s"
+                             repeatCount="indefinite"
+                             calcMode="spline"
+                             keyTimes="0; 0.33; 0.66; 1"
+                             keySplines="0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1"/>
+                </path>
+                <!-- Left fin with rounded edges -->
+                <path d="M30 100 
+                         C28 105, 25 110, 20 115 
+                         Q18 117, 18 120
+                         L30 120 
+                         Z" 
+                      fill="url(#finGradient)" />
+
+                <!-- Right fin with rounded edges -->
+                <path d="M70 100 
+                         C72 105, 75 110, 80 115
+                         Q82 117, 82 120
+                         L70 120 
+                         Z" 
+                      fill="url(#finGradient)" />
             </svg>
         </div>
         <div class="countdown" id="countdown"></div>
