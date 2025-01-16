@@ -124,18 +124,33 @@
 
         .target-date {
             position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            font-size: clamp(0.7rem, 1.5vw, 1rem);
-            color: #666;
-            font-family: 'Courier New', monospace;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: #0f0;
+            font-family: 'Source Code Pro', 'Courier New', monospace;
             text-align: right;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 8px;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .target-date:hover {
+            background: rgba(0, 0, 0, 0.8);
+            border-color: rgba(0, 255, 0, 0.5);
+            text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
         }
 
         @media (max-width: 768px) {
             .target-date {
                 position: relative;
-                margin-top: 2rem;
+                bottom: auto;
+                right: auto;
+                margin: 2rem auto;
                 text-align: center;
             }
         }
