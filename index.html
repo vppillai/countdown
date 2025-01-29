@@ -3,254 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Freeze Countdown</title>
+    <title>Mission Control: Code Release</title>
     <style>
+        :root {
+            --mission-green: #33FF00;
+            --deep-space: #000510;
+            --warning-red: #FF3B30;
+            --console-text: #14FFEC;
+            --crt-overlay: rgba(51, 255, 0, 0.1);
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            color: #fff;
-            font-family: Arial, sans-serif;
-            padding: 20px;
+            background: var(--deep-space);
+            color: var(--mission-green);
+            font-family: 'Courier New', monospace;
             overflow: hidden;
+            display: grid;
+            place-items: center;
+            position: relative;
         }
 
-        .container {
-            display: flex;
-            align-items: center;
-            gap: 4rem;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(
+                transparent 50%, 
+                rgba(0, 0, 0, 0.05) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scanlines 0.5s linear infinite;
+        }
+
+        .mission-container {
+            width: 90%;
+            max-width: 800px;
+            text-align: left;
             padding: 2rem;
+            background: rgba(0, 5, 16, 0.7);
+            border: 2px solid var(--mission-green);
+            box-shadow: 
+                inset 0 0 50px rgba(51, 255, 0, 0.1),
+                0 0 20px rgba(51, 255, 0, 0.2);
+            position: relative;
+            text-shadow: 0 0 5px var(--mission-green);
+            font-family: 'VT323', 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            animation: textFlicker 0.3s infinite;
         }
 
-        .title {
-            font-size: clamp(1.5rem, 4vw, 3rem);
+        .mission-header {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            border-bottom: 1px solid var(--mission-green);
+            padding-bottom: 1rem;
             margin-bottom: 2rem;
-            text-align: center;
-            font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 10px rgba(0,255,0,0.5);
+            font-family: 'VT323', 'Courier New', monospace;
+            letter-spacing: 2px;
+            animation: textFlicker 18s infinite;
         }
 
         .countdown {
-            display: flex;
-            gap: 2rem;
-            text-align: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
         }
 
         .countdown-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background: rgba(255,255,255,0.1);
+            background: rgba(51, 255, 0, 0.03);
+            border: 1px solid var(--mission-green);
             padding: 1rem;
-            border-radius: 10px;
+            font-family: 'Digital-7', monospace;
+            text-shadow: 0 0 5px var(--mission-green);
+            position: relative;
+            animation: textFlicker 20s infinite;
         }
 
-        .countdown span {
-            font-size: clamp(2rem, 8vw, 8rem);
-            font-weight: bold;
-            min-width: 1.6em;
+        .countdown-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 50%, var(--crt-overlay) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
         }
 
-        .label {
-            font-size: clamp(0.5rem, 2vw, 1.5rem);
-            color: #888;
-            margin-top: 0.5rem;
-            text-transform: uppercase;
+        .countdown-item span {
+            font-size: 2.5rem;
+            color: var(--console-text);
+            text-shadow: 0 0 10px var(--console-text);
         }
 
-        .rocket-container {
-            width: clamp(100px, 20vw, 200px);
-            animation: shake 0.5s infinite;
+        .status-line {
+            color: var(--console-text);
+            font-size: 0.9rem;
+            margin: 0.5rem 0;
+            opacity: 0.8;
+            animation: textFlicker 15s infinite;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateY(0); }
-            25% { transform: translateY(-2px); }
-            75% { transform: translateY(2px); }
-        }
-
-        @keyframes flame {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.2); }
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                gap: 2rem;
-            }
-            .countdown {
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-        }
-
-        .title-container {
-            text-align: center;
-            margin-bottom: 3rem;
-            font-family: 'Source Code Pro', 'Consolas', monospace;
-        }
-
-        .title-main {
-            font-size: clamp(2rem, 6vw, 4rem);
-            font-weight: bold;
-            color: #0f0;
-            text-shadow: 0 0 15px rgba(0,255,0,0.7);
-            margin: 1rem 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .title-sub {
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            color: #fff;
-            margin-top: 0.5rem;
-            letter-spacing: 0.3em;
-            font-weight: bold;
-            text-shadow: 
-                0 0 5px #0f0,
-                0 0 10px #0f0,
-                0 0 20px #0f0;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
+        @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0; }
         }
 
-        .target-date {
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        @keyframes textFlicker {
+            0%, 100% { opacity: 1; }
+            /* Rare flickers with minimum opacity */
+            78.7% { opacity: 1; }
+            78.9% { opacity: 0.7; }
+            79.0% { opacity: 1; }
+            /* Spread out glitch */
+            92.5% { opacity: 1; }
+            92.6% { opacity: 0.75; }
+            92.7% { opacity: 1; }
+            92.8% { opacity: 0.8; }
+            92.9% { opacity: 1; }
+            /* Final sequence */
+            99.7% { opacity: 1; }
+            99.8% { opacity: 0.85; }
+            99.9% { opacity: 1; }
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px var(--mission-green); }
+            50% { text-shadow: 0 0 20px var(--mission-green); }
+        }
+
+        @keyframes stableGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; }
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        .freeze-link {
+            position: static;
+            margin-top: 2rem;
+            color: rgba(51, 255, 0, 0.5);
+            text-decoration: none;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            width: fit-content;
+        }
+
+        .freeze-link .command {
+            opacity: 0.7;
+        }
+
+        .freeze-link .path {
+            border-bottom: 1px solid rgba(51, 255, 0, 0.3);
+        }
+
+        .freeze-link:hover .path {
+            color: var(--mission-green);
+            text-shadow: 0 0 5px var(--mission-green);
+            border-bottom-color: var(--mission-green);
+        }
+
+        /* Add release state styles */
+        .mission-container.released {
+            border-color: var(--console-text);
+            box-shadow: 0 0 30px rgba(20, 255, 236, 0.3);
+            animation: stableGlow 4s ease-in-out infinite;
+        }
+
+        .mission-header.released {
+            color: var(--console-text);
+            border-color: var(--console-text);
+            animation: stableGlow 4s ease-in-out infinite;
+        }
+
+        .countdown-item.released {
+            border-color: var(--console-text);
+            background: rgba(20, 255, 236, 0.05);
+            animation: stableGlow 4s ease-in-out infinite;
+        }
+
+        .status-line.released {
+            animation: stableGlow 4s ease-in-out infinite;
+        }
+
+        .ai-attribution {
             position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            font-size: clamp(0.9rem, 2vw, 1.2rem);
-            color: #0f0;
-            font-family: 'Source Code Pro', 'Courier New', monospace;
-            text-align: right;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 1rem;
-            border: 1px solid rgba(0, 255, 0, 0.3);
-            border-radius: 8px;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
-            transition: all 0.3s ease;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--mission-green);
+            background: rgba(51, 255, 0, 0.05);
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--mission-green);
         }
 
-        .target-date:hover {
-            background: rgba(0, 0, 0, 0.8);
-            border-color: rgba(0, 255, 0, 0.5);
-            text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+        .countdown-prefix {
+            color: var(--mission-green);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            text-align: center;
         }
 
-        @media (max-width: 768px) {
-            .target-date {
-                position: relative;
-                bottom: auto;
-                right: auto;
-                margin: 2rem auto;
-                text-align: center;
-            }
-        }
-
-        .expired {
-            color: #cc0000;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .negative-time span {
-            color: #cc0000;
-        }
-
-        .target-date.expired {
-            color: #cc0000;
+        .countdown-prefix.released {
+            color: var(--console-text);
         }
     </style>
 </head>
 <body>
-    <div class="title-container">
-        <div class="title-sub">CODE FREEZE</div>
-        <div class="title-main">> T-MINUS <</div>
-    </div>
-    <div class="container">
-        <div class="rocket-container">
-            <svg viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="flameBase" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#fff" />
-                        <stop offset="50%" style="stop-color:#ff6600" />
-                        <stop offset="100%" style="stop-color:#ff8c00" />
-                    </linearGradient>
-                    <linearGradient id="finGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#004d00" />
-                        <stop offset="100%" style="stop-color:#00ff00" />
-                    </linearGradient>
-                </defs>
-                <circle class="smoke" cx="12" cy="32" r="1" fill="#666" opacity="0.3">
-                    <animate attributeName="cy" values="32;28" dur="2s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="0.3;0" dur="2s" repeatCount="indefinite" />
-                </circle>
-                <path d="M12 0L8 24h8L12 0z" fill="#fff"/>
-                <path d="M8 24h8v6H8z" fill="#ddd"/>
-                <path d="M8 24L4 30V24h4z" fill="#ccc"/>
-                <path d="M16 24l4 6V24h-4z" fill="#ccc"/>
-                <path class="flame" d="M10 30h4l-2 4z" fill="#f73">
-                    <animate attributeName="d" 
-                             values="M10 30h4l-2 4z;M10 30h4l-2 6z" 
-                             dur="0.2s" 
-                             repeatCount="indefinite"/>
-                </path>
-                <!-- Base Flame -->
-                <path class="flame-base" 
-                      d="M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z" 
-                      fill="url(#flameBase)"
-                      opacity="0.9">
-                    <animate attributeName="d" 
-                             values="M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z;
-                                     M40,160 C40,160 45,163 50,160 C55,163 60,160 60,160 L50,188 Z;
-                                     M40,160 C40,160 45,164 50,160 C55,164 60,160 60,160 L50,186 Z;
-                                     M40,160 C40,160 45,165 50,160 C55,165 60,160 60,160 L50,185 Z"
-                             dur="1.2s"
-                             repeatCount="indefinite"
-                             calcMode="spline"
-                             keyTimes="0; 0.33; 0.66; 1"
-                             keySplines="0.5 0 0.5 1; 0.5 0 0.5 1; 0.5 0 0.5 1"/>
-                </path>
-                <!-- Left fin with rounded edges -->
-                <path d="M30 100 
-                         C28 105, 25 110, 20 115 
-                         Q18 117, 18 120
-                         L30 120 
-                         Z" 
-                      fill="url(#finGradient)" />
-
-                <!-- Right fin with rounded edges -->
-                <path d="M70 100 
-                         C72 105, 75 110, 80 115
-                         Q82 117, 82 120
-                         L70 120 
-                         Z" 
-                      fill="url(#finGradient)" />
-            </svg>
-        </div>
-        <div class="countdown" id="countdown"></div>
+    <div class="mission-container">
+        <h1 class="mission-header">> MISSION: CODE RELEASE<span class="cursor">|</span></h1>
+        <div class="status-line">> Initializing launch sequence...</div>
+        <div class="status-line">> Target: 2025-02-14 23:59:59 PST</div>
+        <div class="countdown-prefix">T-minus</div>
+        <div id="countdown" class="countdown"></div>
+        <a href="https://vppillai.github.io/countdown/freeze.html" class="freeze-link">
+            <span class="command">> cd</span>
+            <span class="path">/code-freeze</span>
+        </a>
     </div>
 
-    <div class="target-date">
-        Until: January 24, 2025<br>
-        11:59:59 PM PST
-    </div>
-    
     <script>
         function updateCountdown() {
+            const target = new Date('2025-02-14T23:59:59-08:00');
             const now = new Date();
-            const target = new Date('2025-01-25T07:59:59Z'); // UTC time for 11:59:59 PM PST Jan 24
             const diff = target - now;
-            const isNegative = diff < 0;
+            const isReleased = diff < 0;
             const absDiff = Math.abs(diff);
+
+            // Update mission status
+            const container = document.querySelector('.mission-container');
+            const header = document.querySelector('.mission-header');
+            const statusLines = document.querySelectorAll('.status-line');
+
+            if (isReleased) {
+                container.classList.add('released');
+                header.classList.add('released');
+                statusLines.forEach(line => line.classList.add('released'));
+                header.innerHTML = '> MISSION: COMPLETE<span class="cursor">|</span>';
+                statusLines[0].textContent = '> Code successfully released';
+                statusLines[1].textContent = '> Release completed on February 14, 2025 11:59:59 PM PST';
+            }
+
+            // Update countdown prefix
+            const prefix = document.querySelector('.countdown-prefix');
+            prefix.textContent = isReleased ? 'Released for' : 'T-minus';
+            prefix.classList.toggle('released', isReleased);
 
             const timeUnits = {
                 days: Math.floor(absDiff / (1000 * 60 * 60 * 24)),
@@ -259,35 +269,27 @@
                 seconds: Math.floor((absDiff % (1000 * 60)) / 1000)
             };
 
-            const timeHTML = Object.entries(timeUnits)
+            document.getElementById('countdown').innerHTML = Object.entries(timeUnits)
                 .map(([unit, value]) => `
-                    <div class="countdown-item ${isNegative ? 'negative-time' : ''}">
+                    <div class="countdown-item ${isReleased ? 'released' : ''}">
                         <span>${value.toString().padStart(2, '0')}</span>
-                        <div class="label">${unit.charAt(0).toUpperCase() + unit.slice(1)}</div>
+                        <div class="label">${unit}</div>
                     </div>
                 `).join('');
-
-            document.getElementById('countdown').innerHTML = timeHTML;
-
-            // Update target date text
-            const targetDateEl = document.querySelector('.target-date');
-            if (isNegative) {
-                targetDateEl.innerHTML = 'Since: January 24, 2025<br>11:59:59 PM PST';
-                targetDateEl.classList.add('expired');
-            } else {
-                targetDateEl.innerHTML = 'Until: January 24, 2025<br>11:59:59 PM PST';
-                targetDateEl.classList.remove('expired');
-            }
-
-            // Update title text
-            const titleMain = document.querySelector('.title-main');
-            titleMain.innerHTML = isNegative ? 
-                '> ELAPSED TIME <' : 
-                '> COUNTDOWN <';
         }
 
         updateCountdown();
         setInterval(updateCountdown, 1000);
     </script>
+
+    <!-- Add AI Attribution -->
+    <div class="ai-attribution">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        AI Generated
+    </div>
 </body>
 </html>

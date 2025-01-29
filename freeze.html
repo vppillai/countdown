@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Code Freeze Countdown Timer">
+    <title>Code Freeze Countdown</title>
+    <style>
+        :root {
+            --frost-white: #E8F1F2;
+            --ice-blue: #A5F2F3;
+            --deep-blue: #0B3D91;
+            --glacier: #4F8A8B;
+            --night: #0A192F;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--night), var(--deep-blue));
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--frost-white);
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+            width: 90%;
+            max-width: 800px;
+            padding: 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(165, 242, 243, 0.1);
+            animation: appear 1s ease-out;
+        }
+
+        .title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            margin-bottom: 2rem;
+            color: var(--ice-blue);
+            text-shadow: 0 0 20px rgba(165, 242, 243, 0.5);
+            animation: frost-pulse 3s infinite;
+        }
+
+        .countdown {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .countdown-item {
+            min-width: 120px;
+            padding: 1rem;
+            background: rgba(165, 242, 243, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(165, 242, 243, 0.2);
+            animation: frost-over 2s infinite;
+        }
+
+        .countdown-item span {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--frost-white);
+        }
+
+        .label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--ice-blue);
+        }
+
+        .bottom-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            width: 100%;
+            align-items: center;
+        }
+
+        .target-date {
+            font-size: 0.9rem;
+            color: var (--glacier);
+            padding: 0.5rem;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .elapsed-link {
+            margin-top: 2rem;
+            color: var(--ice-blue);
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--ice-blue);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .elapsed-link:hover {
+            background: rgba(165, 242, 243, 0.1);
+            transform: translateY(-2px);
+        }
+
+        @keyframes frost-pulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(165, 242, 243, 0.5); }
+            50% { text-shadow: 0 0 40px rgba(165, 242, 243, 0.8); }
+        }
+
+        @keyframes frost-over {
+            0%, 100% { border-color: rgba(165, 242, 243, 0.2); }
+            50% { border-color: rgba(165, 242, 243, 0.4); }
+        }
+
+        @keyframes appear {
+            from { 
+                opacity: 0;
+                transform: scale(0.95);
+                filter: blur(10px);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1.5rem;
+                gap: 1.5rem;
+            }
+            
+            .bottom-info {
+                gap: 1rem;
+            }
+        }
+
+        /* Add new frozen states */
+        .countdown-item.elapsed {
+            background: rgba(165, 242, 243, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            animation: freeze-over 3s forwards; /* Increased from 2s */
+        }
+
+        .countdown-item.elapsed::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(255,255,255,0.1) 1px, transparent 2px),
+                radial-gradient(circle at 70% 60%, rgba(255,255,255,0.1) 1px, transparent 2px),
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 2px, transparent 3px);
+            animation: crystal-rotate 30s linear infinite; /* Increased from 20s */
+        }
+
+        .countdown-item.elapsed::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(125deg, 
+                rgba(255,255,255,0.2) 0%,
+                rgba(255,255,255,0) 40%,
+                rgba(165,242,243,0.1) 60%,
+                rgba(255,255,255,0.2) 100%);
+            animation: ice-shimmer 5s infinite; /* Increased from 3s */
+        }
+
+        @keyframes freeze-over {
+            0% {
+                box-shadow: inset 0 0 5px rgba(165,242,243,0.3);
+            }
+            100% {
+                box-shadow: 
+                    inset 0 0 20px rgba(165,242,243,0.4),
+                    0 0 30px rgba(165,242,243,0.2);
+            }
+        }
+
+        @keyframes crystal-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ice-shimmer {
+             0% { opacity: 0.5; transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            50% { opacity: 0.8; transform: translateX(100%) translateY(100%) rotate(45deg); }
+            100% { opacity: 0.5; transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+        }
+
+        .title.elapsed {
+            text-shadow: 
+                0 0 30px var(--ice-blue),
+                0 0 60px var(--ice-blue),
+                0 0 90px rgba(165,242,243,0.3);
+            animation: frost-title 6s infinite; /* Increased from 4s */
+        }
+
+        @keyframes frost-title {
+            0%, 100% { 
+                filter: brightness(1) blur(0px);
+            }
+            50% { 
+                filter: brightness(1.2) blur(1px);
+            }
+        }
+
+        @keyframes frozen-cube {
+            0%, 100% { 
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: scale(1.02);
+                opacity: 1;
+            }
+        }
+
+        @keyframes frozen-pulse {
+            0%, 100% { 
+                text-shadow: 0 0 30px var(--ice-blue);
+            }
+            50% { 
+                text-shadow: 0 0 50px var (--ice-blue);
+            }
+        }
+
+        .ai-attribution {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--ice-blue);
+            background: rgba(165, 242, 243, 0.1);
+            backdrop-filter: blur(5px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(165, 242, 243, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .ai-attribution:hover {
+            background: rgba(165, 242, 243, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .ai-icon {
+            width: 16px;
+            height: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">> CODE FREEZE <</h1>
+        <div id="countdown" class="countdown"></div>
+        <div class="bottom-info">
+            <div class="target-date">Target: February 24, 2025 11:59:59 PM PST</div>
+            <a href="https://vppillai.github.io/countdown/index.html" class="elapsed-link">Release Countdown</a>
+        </div>
+    </div>
+
+    <div class="ai-attribution">
+        <svg class="ai-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        AI Generated
+    </div>
+
+    <script>
+        function updateCountdown() {
+            const target = new Date('2025-01-24T23:59:59-08:00');
+            const now = new Date();
+            const diff = target - now;
+            const isElapsed = diff < 0;
+            const absDiff = Math.abs(diff);
+
+            // Update title text and class
+            const title = document.querySelector('.title');
+            title.textContent = isElapsed ? '> CODE FROZEN <' : '> CODE FREEZE <';
+            title.classList.toggle('elapsed', isElapsed);
+
+            const timeUnits = {
+                days: Math.floor(absDiff / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((absDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                minutes: Math.floor((absDiff % (1000 * 60 * 60)) / (1000 * 60)),
+                seconds: Math.floor((absDiff % (1000 * 60)) / 1000)
+            };
+
+            document.getElementById('countdown').innerHTML = Object.entries(timeUnits)
+                .map(([unit, value]) => `
+                    <div class="countdown-item ${isElapsed ? 'elapsed' : ''}">
+                        <span>${value.toString().padStart(2, '0')}</span>
+                        <div class="label">${unit}</div>
+                    </div>
+                `).join('');
+
+            // Update target date text
+            document.querySelector('.target-date').textContent = 
+                isElapsed ? 'Code Freeze occurred on January 24, 2025 11:59:59 PM PST' 
+                         : 'Target: January 24, 2025 11:59:59 PM PST';
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
